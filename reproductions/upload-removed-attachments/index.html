@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <title>Upload 上传期间删除附件复现</title>
+    <link rel="stylesheet" href="https://unpkg.com/tdesign-vue-next@1.20.7/dist/tdesign.min.css" />
+    <script src="https://unpkg.com/vue@3.5.34/dist/vue.global.prod.js"></script>
+    <script src="https://unpkg.com/tdesign-vue-next@1.20.7/dist/tdesign.min.js"></script>
+    <style>
+      body { margin: 40px auto; max-width: 960px; font-family: system-ui, sans-serif; }
+      p { line-height: 1.8; }
+      pre { padding: 16px; background: #f3f4f7; }
+      #finish { margin: 16px 0; padding: 8px 14px; }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <h1>合同附件</h1>
+      <p>选择任意新文件，在上传结束前删除 old-contract.pdf，然后点击“返回上传成功”。</p>
+      <p>本例使用 request-method 手动控制成功响应的时机，所选文件不会发送到服务器。</p>
+      <t-upload
+        v-model:files="files"
+        theme="file-flow"
+        multiple
+        :request-method="requestMethod"
+        :upload-all-files-in-one-request="combined"
+        @change="recordChange"
+      ></t-upload>
+      <button id="finish" :disabled="!finish" @click="complete">返回上传成功</button>
+      <h2>绑定的附件数组</h2>
+      <pre id="files">{{ JSON.stringify(files.map(file => file.name)) }}</pre>
+      <h2>change 事件</h2>
+      <pre id="events">{{ events.join('\n') }}</pre>
+    </div>
+    <script>
+      Vue.createApp({
+        setup() {
+          const files = Vue.ref([{ name: 'old-contract.pdf', url: '/old-contract.pdf', status: 'success', size: 2048 }]);
+          const events = Vue.ref([]);
+          const finish = Vue.shallowRef(null);
+          const combined = new URLSearchParams(location.search).has('combined');
+          const requestMethod = () => new Promise((resolve) => {
+            finish.value = () => resolve({ status: 'success', response: { url: '/new-contract.pdf' } });
+          });
+          const complete = () => {
+            finish.value();
+            finish.value = null;
+          };
+          const recordChange = (value, context) => {
+            events.value.push(`${context.trigger}: [${value.map(file => file.name).join(', ')}]`);
+          };
+          return { files, events, finish, combined, requestMethod, complete, recordChange };
+        },
+      }).use(TDesign).mount('#app');
+    </script>
+  </body>
+</html>
