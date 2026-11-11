@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Transfer 翻页后搜索</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tdesign-vue-next@1.20.11/dist/tdesign.min.css">
+  <style>
+    body { margin: 0; background: #f3f3f3; color: #1f2329; font: 14px/1.6 system-ui, sans-serif; }
+    main { box-sizing: border-box; max-width: 600px; margin: 32px auto; padding: 24px; background: white; border-radius: 8px; }
+    h1 { margin: 0 0 8px; font-size: 22px; }
+    p { margin: 0 0 16px; }
+    .transfer-demo { overflow-x: auto; }
+    .actions { margin-top: 16px; }
+    @media (max-width: 620px) { main { margin: 12px; padding: 16px; } }
+  </style>
+</head>
+<body>
+  <main id="app">
+    <h1>Transfer 翻页后搜索</h1>
+    <p>在左侧点击下一页，再输入 Alice。</p>
+    <div class="transfer-demo">
+      <t-transfer :key="resetKey" :data="data" :pagination="{ pageSize: 2 }" search :title="['待选人员', '已选人员']"></t-transfer>
+    </div>
+    <div class="actions">
+      <t-button variant="outline" @click="resetKey++">重置示例</t-button>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.5.45/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tdesign-vue-next@1.20.11/dist/tdesign.min.js"></script>
+  <script>
+    Vue.createApp({
+      data() {
+        return {
+          resetKey: 0,
+          data: ['Alice', 'Bob', 'Carol', 'David'].map((label) => ({ label, value: label })),
+        };
+      },
+    }).component('t-transfer', TDesign.Transfer).component('t-button', TDesign.Button).mount('#app');
+  </script>
+</body>
+</html>
