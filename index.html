@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Transfer 禁用搜索与分页</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tdesign-vue-next@1.20.11/dist/tdesign.min.css">
+  <style>
+    body { margin: 0; background: #f3f3f3; color: #1f2329; font: 14px/1.6 system-ui, sans-serif; }
+    main { box-sizing: border-box; max-width: 590px; margin: 32px auto; padding: 24px; border-radius: 8px; background: white; }
+    h1 { margin: 0 0 8px; font-size: 22px; }
+    p { margin: 0 0 16px; }
+    .transfer-demo { overflow-x: auto; }
+    .transfer-demo .t-transfer { min-width: 475px; }
+    .events { margin-top: 16px; }
+    @media (max-width: 620px) { main { margin: 12px; padding: 16px; } }
+  </style>
+</head>
+<body>
+  <main id="app">
+    <h1>Transfer 禁用搜索与分页</h1>
+    <p><code>disabled = {{ disabled }}</code>。在左侧点击下一页，再尝试输入 a。</p>
+    <div class="transfer-demo">
+      <t-transfer :data="data" :disabled="disabled" :pagination="{ pageSize: 2 }" search
+        :title="['待选人员', '已选人员']"
+        @page-change="onPageChange" @search="onSearch"></t-transfer>
+    </div>
+    <p class="events" aria-live="polite">翻页回调 {{ pageEvents }} 次 · 搜索回调 {{ searchEvents }} 次</p>
+    <t-button variant="outline" @click="disabled = !disabled">{{ disabled ? '启用穿梭框' : '禁用穿梭框' }}</t-button>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.5.45/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tdesign-vue-next@1.20.11/dist/tdesign.min.js"></script>
+  <script>
+    Vue.createApp({
+      data() {
+        return {
+          data: ['Alice', 'Bob', 'Carol', 'Caroline'].map((label) => ({ label, value: label })),
+          disabled: true,
+          pageEvents: 0,
+          searchEvents: 0,
+        };
+      },
+      methods: {
+        onPageChange() { this.pageEvents++; },
+        onSearch() { this.searchEvents++; },
+      },
+    }).component('t-transfer', TDesign.Transfer).component('t-button', TDesign.Button).mount('#app');
+  </script>
+</body>
+</html>
