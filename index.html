@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>InputNumber 大数范围校验</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tdesign-vue-next@1.20.11/dist/tdesign.min.css">
+  <style>
+    body { margin: 0; color: #1f2329; background: #f3f3f3; font: 14px/1.65 system-ui, sans-serif; }
+    main { box-sizing: border-box; max-width: 650px; margin: 36px auto; padding: 28px; border-radius: 8px; background: #fff; }
+    h1 { margin: 0 0 12px; font-size: 22px; }
+    p { margin: 12px 0; }
+    label { display: block; margin: 24px 0 8px; font-weight: 600; }
+    .t-input-number { width: 100%; }
+    .results { margin: 20px 0; padding: 12px 16px; border-radius: 4px; background: #f3f5f8; overflow-wrap: anywhere; }
+    code { font-family: ui-monospace, monospace; }
+    @media (max-width: 680px) { main { margin: 12px; padding: 20px; } }
+  </style>
+</head>
+<body>
+  <main id="app">
+    <h1>InputNumber 大数范围校验</h1>
+    <p>允许范围 <code>{{ min }}</code> 至 <code>{{ max }}</code>。</p>
+    <p>输入 <code>10000000000000000000</code>，再点击「完成输入」，观察是否纠正为最小值。</p>
+    <label for="amount-input">数值</label>
+    <t-input-number v-model="value" :min="min" :max="max" large-number
+      :allow-input-over-limit="false" :input-props="{ id: 'amount-input' }"
+      @blur="onBlur" @change="onChange"></t-input-number>
+    <div class="results" aria-live="polite">
+      <div>当前值 <code id="model-value">{{ value }}</code></div>
+      <div>失焦回调值 <code id="blur-value">{{ blurValue }}</code></div>
+      <div>事件次数 <code id="change-count">{{ changeCount }}</code></div>
+    </div>
+    <t-button>完成输入</t-button>
+    <t-button variant="outline" style="margin-left: 12px" @click="reset">重置</t-button>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.5.45/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tdesign-vue-next@1.20.11/dist/tdesign.min.js"></script>
+  <script>
+    Vue.createApp({
+      data() {
+        return {
+          min: '10000000000000000001',
+          max: '10000000000000000009',
+          value: '10000000000000000005',
+          blurValue: '尚未失焦',
+          changeCount: 0,
+        };
+      },
+      methods: {
+        onBlur(value) { this.blurValue = String(value); },
+        onChange() { this.changeCount++; },
+        reset() {
+          this.value = '10000000000000000005';
+          this.blurValue = '尚未失焦';
+          this.changeCount = 0;
+        },
+      },
+    }).component('t-input-number', TDesign.InputNumber)
+      .component('t-button', TDesign.Button).mount('#app');
+  </script>
+</body>
+</html>

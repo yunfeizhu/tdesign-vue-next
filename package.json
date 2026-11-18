@@ -1,0 +1,11 @@
+{
+  "name": "tdesign-input-number-min-reproduction",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0"
+  },
+  "devDependencies": {
+    "vite": "6.3.5"
+  }
+}
