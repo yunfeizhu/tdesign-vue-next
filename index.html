@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RangeInput 单侧清空</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tdesign-vue-next@1.20.11/dist/tdesign.min.css">
+  <style>
+    body { margin: 0; background: #f3f3f3; color: #1f2329; font: 14px/1.65 system-ui, sans-serif; }
+    main { box-sizing: border-box; max-width: 620px; margin: 36px auto; padding: 28px; border-radius: 8px; background: #fff; }
+    h1 { margin: 0 0 12px; font-size: 22px; }
+    p { margin: 12px 0; }
+    .field-label { display: block; margin: 22px 0 8px; font-weight: 600; }
+    .results { margin: 18px 0; padding: 12px 16px; border-radius: 4px; background: #f3f5f8; overflow-wrap: anywhere; }
+    code { font-family: ui-monospace, monospace; }
+    @media (max-width: 650px) { main { margin: 12px; padding: 20px; } }
+  </style>
+</head>
+<body>
+  <main id="app">
+    <h1>RangeInput 单侧清空</h1>
+    <p>将鼠标移到起始值上，点击该输入框内的清空按钮，观察结束值是否保留。</p>
+    <span class="field-label">价格区间</span>
+    <t-range-input v-if="controlled" :key="revision" v-model="value"
+      :input-props="{ clearable: true }" :placeholder="['起始值', '结束值']" @change="onChange"></t-range-input>
+    <t-range-input v-else :key="revision" :default-value="['100', '500']"
+      :input-props="{ clearable: true }" :placeholder="['起始值', '结束值']" @change="onChange"></t-range-input>
+    <div class="results" aria-live="polite">
+      <div>最近的变更值 <code id="last-value">{{ JSON.stringify(lastValue) }}</code></div>
+      <div>变更回调次数 <code id="change-count">{{ events.length }}</code></div>
+      <div v-if="controlled">v-model <code id="model-value">{{ JSON.stringify(value) }}</code></div>
+    </div>
+    <t-button variant="outline" @click="reset">重置</t-button>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/vue@3.5.45/dist/vue.global.prod.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tdesign-vue-next@1.20.11/dist/tdesign.min.js"></script>
+  <script>
+    const params = new URLSearchParams(location.search);
+    const mount = () => Vue.createApp({
+      data() {
+        return {
+          controlled: !params.has('default'),
+          revision: 0,
+          value: ['100', '500'],
+          lastValue: ['100', '500'],
+          events: [],
+        };
+      },
+      methods: {
+        onChange(value, context) {
+          this.lastValue = value;
+          this.events.push({ value: [...value], position: context.position, trigger: context.trigger });
+          window.rangeClearEvents = this.events;
+        },
+        reset() {
+          this.value = ['100', '500'];
+          this.lastValue = ['100', '500'];
+          this.events = [];
+          window.rangeClearEvents = this.events;
+          this.revision++;
+        },
+      },
+    }).component('t-range-input', TDesign.RangeInput)
+      .component('t-button', TDesign.Button).mount('#app');
+    mount();
+  </script>
+</body>
+</html>
